@@ -9,6 +9,7 @@ class AuthenticationControllerBlueprint {
   //   const accessToken = await jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
   //   //res.json({accessToken});
   // }
+  
   async authenticateToken(req, res, next) {
     const { authorization } = req.headers;
     const token = authorization && authorization.split(' ')[1]; // "Bearer kljahkl34jh4321jh41lkjh23k;l1j2h3lk1j2h31lkuj2j3"
