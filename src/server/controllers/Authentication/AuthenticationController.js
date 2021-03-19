@@ -9,20 +9,13 @@ class AuthenticationControllerBlueprint {
   //   const accessToken = await jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
   //   //res.json({accessToken});
   // }
-  
-  async authenticateToken(req, res, next) {
-    const { authorization } = req.headers;
-    const token = authorization && authorization.split(' ')[1]; // "Bearer kljahkl34jh4321jh41lkjh23k;l1j2h3lk1j2h31lkuj2j3"
-
-    if (token === null) return res.status(401);
-    try {
-      await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET); // (token, secretkey, callback or promise)
-    } catch (error) {
-      console.log(error);
-    }
+  authenticateToken(req, res, next) {
+    const { inputUsername } = req.body;
+    const username = inputUsername;
+    const accessToken = jwt.sign({ username, exp: Math.floor(Date.now() / 1000) + (60 * 60) }, process.env.ACCESS_TOKEN_SECRET);
+    
+    console.log("🚀 ~ file: AuthenticationController.js ~ line 15 ~ AuthenticationControllerBlueprint ~ authenticateToken ~ accessToken", accessToken);
   }
-
-
   async authenticateUser(req, res, next) {
     const { inputUsername, inputPassword } = req.body;
     const queryString = `SELECT * FROM credential WHERE username = '${inputUsername}'`;
@@ -39,9 +32,10 @@ class AuthenticationControllerBlueprint {
 }
 
 const AuthenticationController = new AuthenticationControllerBlueprint();
-const { authenticateUser } = AuthenticationController;
+const { authenticateUser, authenticateToken } = AuthenticationController;
 // const authenticateToken = AuthenticationController.authenticateToken;
 
 module.exports = {
   authenticateUser,
+  authenticateToken
 };

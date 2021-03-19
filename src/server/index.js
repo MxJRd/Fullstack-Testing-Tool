@@ -4,7 +4,53 @@ const port = 3000;
 const path = require('path');
 const apiRouter = require('./routes/ApiRouter');
 const cookieParser = require('cookie-parser');
+const { DefaultHoplite, CreateUserSchema } = require('hopLiteJS');
+const { AuthnController, AuthzController } = DefaultHoplite;
+require('dotenv').config();
+DefaultHoplite.test("hello");
+console.log(DefaultHoplite)
+// AuthzController.testAuthz("Authz Running");
+// AuthnController.testAuthn("Authn Running");
+/*
+const {inputusername, somepassword, role} = req.body;
+
+const hopliteUser = hoplite.createUser({
+  username,
+  password,
+  role
+})
+
+*/
+const testUser = {
+  username: "test1",
+  password: "password123",
+  role: "admin"
+}
+
+const testRules = {
+  cookiejwt: {
+    cookieKey: "role",
+    payload: {
+      test: "tested payload",
+      test1: "another key",
+      test2: "final key"
+    },
+    secret: process.env.ACCESS_TOKEN_SECRET
+  }
+}
+let hopliteRules = createRuleset(testRules);
+// query database for user.
+//if user exists, run create user
+// console.log(express);
 app.use(cookieParser());
+app.post('/authn', async (req, res) => {
+  const result = await AuthnController.authenticate(testRules, res);
+})
+
+app.post('/authz', AuthzController.authorize(testRules, process.env.ACCESS_TOKEN_SECRET), (req, res) => {
+  console.log("Authz fired.")
+  res.status(200).send("Authorization Successful");
+})
 // creating session;
 // const session = require('express-session');
 // const { v4: uuid } = require('uuid');
@@ -19,13 +65,9 @@ app.use('/static', express.static(path.resolve(__dirname, "../public/src")));
 
 app.use('/api', apiRouter);
 
-
-
-
-
-
 // // check cookie
 // function checkSignIn(req, res, next) {
+
 //   console.log('hello world middleware')
 //   console.log("these are the cookies", req.cookies)
 //   if (req.cookies === { role: "token" }) {
